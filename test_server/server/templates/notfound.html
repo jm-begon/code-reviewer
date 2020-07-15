@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Not Found{% endblock %}
+{% block head %}
+    {{ super() }} {# to keep the default content of the head block #}
+    {# and here we can add other things #}
+{% endblock %}
+{% block content %}
+    The page you requested does not exist
+{% endblock %}

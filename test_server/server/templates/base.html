@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+    <meta charset='utf-8' />
+    <title>Code Reviewer - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+    {% endblock %}
+</head>
+<body>
+    <h1>Code Reviewer</h1>
+    <nav>
+        <ul>
+            <li><a href='/'>Home</a></li>
+        </ul>
+    </nav>
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

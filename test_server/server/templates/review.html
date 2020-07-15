@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Review{% endblock %}
+{% block head %}
+    {{ super() }} {# to keep the default content of the head block #}
+    {# and here we can add other things #}
+{% endblock %}
+{% block content %}
+    {% for file in files %}
+        <textarea>{{file}}</textarea><br />
+    {% endfor %}
+{% endblock %}
