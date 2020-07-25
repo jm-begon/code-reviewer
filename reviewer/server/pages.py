@@ -14,9 +14,9 @@ env = Environment(
 class Page():
     """
     """
-    def __init__(self, data):
-        if not instanceof(data, dict):
-            raise ValueError('Request data should be passed as a dictionary')
+
+    def __init__(self, cwd, data):
+        self.cwd = cwd
         self.data = data
         self.template = 'notfound.html'
 
@@ -36,43 +36,40 @@ class Page():
 class HomePage(Page):
     """
     """
-    def __init__(self, data):
+
+    def __init__(self, cwd, data):
+        self.cwd = cwd
         self.data = data
         self.template = 'home.html'
 
     def format_data(self):
         """
         """
-        cwd = self.data['cwd'][0].rstrip('/') if 'cwd' in self.data else '~'
-        directory = Path(cwd).expanduser().resolve()
-        cwd = str(directory)
+        path = Path(self.data['path'][0].rstrip('/') if 'path' in self.data else '.')
+        directory = self.cwd / path
         
         files, dirs = [], []
         if directory.is_dir():
-            for el in directory.glob(r'*'):
+            for el in sorted(directory.glob(r'*')):
                 dirs.append(el.name) if el.is_dir() else files.append(el.name)
 
-        return {'cwd': cwd, 'files': files, 'dirs': dirs}
+        return {'cwd': self.cwd, 'path': path, 'files': files, 'dirs': dirs}
 
 
 class ReviewPage(Page):
-    def __init__(self, data):
+    """
+    """
+
+    def __init__(self, cwd, data):
+        self.cwd = cwd
         self.data = data
         self.template = 'review.html'
 
     def format_data(self):
         """
         """
-        cwd = self.data['cwd'][0] if 'cwd' in self.data else '~'
-        directory = Path(cwd).expanduser().resolve()
-        cwd = str(directory)
-        
-        files = []
-        if directory.is_dir():
-            for el in directory.glob(r'*'):
-                if el.is_file() and not el.name.startswith('.'):
-                    files.append(el.name)
-        elif directory.is_file():
-            files.append(directory.name)
-        
-        return {'files': files}
+        file = self.data['file'][0]
+        with open(self.cwd / file, 'r') as f:
+            lines = f.readlines()
+
+        return {'cwd': self.cwd, 'file': file, 'lines': lines}

@@ -6,7 +6,7 @@ from reviewer.server.pages import HomePage, ReviewPage
 from jinja2.exceptions import TemplateNotFound
 
 
-DEBUG = True
+DEBUG = False
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 HTML_DIR = BASE_DIR / 'server' / 'html'
@@ -24,9 +24,10 @@ content_type = {
 class Router():
     """
     """
-    def __init__(self, path, data=None):
+    def __init__(self, cwd, path, data=None):
         """
         """
+        self.cwd = cwd
         self.path = path
         if data is None:
             self.data = {}
@@ -48,7 +49,7 @@ class Router():
             return 200, {'Content-type': content_type[path.suffix]}, content
 
         try:
-            page = routes[self.path](self.data)
+            page = routes[self.path](self.cwd, self.data)
             return 200, {'Content-type': 'text/html'}, page.get_html()
 
         except (KeyError, TemplateNotFound) as e:

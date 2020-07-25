@@ -5,25 +5,31 @@
     {# and here we can add other things #}
 {% endblock %}
 {% block content %}
-    <form method='GET' action=''>
-        <label for='cwd'>Working Directory</label> : <input style='width: 500px;' type='text' name='cwd' value='{{cwd}}'>
-        <button type='submit'>Change</button>
-        <a href="review?cwd={{cwd}}">Review this directory</a>
-    </form>
-    {% if not files %}
-    <p>Invalid or empty directory</p>
+    <p>
+        Working directory: <code><a href='/'>{{cwd}}</a></code><br />
+        Relative path: <code>{{path}}</code>
+    </p>
+
+    {% if not dirs and not files %}
+        <p>Invalid or empty directory</p>
     {% else %}
-    <ul>
-        {% for dir in dirs %}
-            {% if not dir.startswith('.') %}
-            <li><a href='/?cwd={{cwd}}/{{dir}}'>{{dir}}</a></li>
+        <p>Subdirectories</p>
+        <ul>
+            {% if not dirs %}
+                <li><span class='text-muted'>No subdirectories</span></li>
             {% endif %}
-        {% endfor %}
-        {% for file in files %}
-            {% if not file.startswith('.') %}
-            <li>{{file}}</li>
+            {% for dir in dirs %}
+                <li><a href='/?path={{path / dir}}'>{{dir}}</a></li>
+            {% endfor %}
+        </ul>
+        <p>Files to comment</p>
+        <ul>
+            {% if not files %}
+                <li><span class='text-muted'>No files</span></li>
             {% endif %}
-        {% endfor %}
-    </ul>
+            {% for file in files %}
+                <li><a href='/review?file={{path / file}}'>{{file}}</a></li>
+            {% endfor %}
+        </ul>
     {% endif %}
 {% endblock %}

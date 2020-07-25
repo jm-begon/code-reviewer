@@ -5,7 +5,28 @@
     {# and here we can add other things #}
 {% endblock %}
 {% block content %}
-    {% for file in files %}
-        <textarea>{{file}}</textarea><br />
-    {% endfor %}
+    <table id="code-table">
+    	<tbody id="code-table-tbody">
+    		{% for line in lines %}
+    			<tr onclick="comment(this);">
+    				<td><code>{{loop.index}}</code></td>
+    				<td><code style='white-space: pre;'>{{line}}</code></td>
+    			</tr>
+    		{% endfor %}
+    	</tbody>
+    </table>
+    <script type="text/javascript">
+        var table = document.getElementById('code-table');
+        var tbody = document.getElementById('code-table-tbody');
+        function comment(td) {
+            var input_row = document.createElement('tr');
+            input_row.innerHTML = '<td></td><td><input type="text" placeholder="Comment"/></td>';
+            tbody.insertBefore(input_row, td);
+        }
+    </script>
+    <style type="text/css">
+        table input {
+            width: 100%;
+        }
+    </style>
 {% endblock %}

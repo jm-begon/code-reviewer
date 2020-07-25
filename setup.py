@@ -8,7 +8,7 @@ setup(
     author='Charles Ferir <charles.ferir@student.uliege.be>, Gaspard Lambrechts <gaspard.lambrechts@student.uliege.be>',
     packages=['reviewer', 'reviewer.server', 'reviewer.languages'],
     install_requires=['jinja2'],
-    scripts=['scripts/review'],
+    scripts=['review'],
     package_data={'reviewer.server': ['html/*']},
     include_package_data=True,
 )
