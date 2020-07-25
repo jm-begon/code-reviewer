@@ -2,11 +2,11 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 from pathlib import Path
 
-from languages.matches import languages
+from reviewer.languages.matches import languages
 
 
 env = Environment(
-    loader=PackageLoader('server', 'templates'),
+    loader=PackageLoader('reviewer.server', 'html'),
     autoescape=select_autoescape(['html', 'xml'])
 )
 
@@ -76,4 +76,3 @@ class ReviewPage(Page):
             files.append(directory.name)
         
         return {'files': files}
-        

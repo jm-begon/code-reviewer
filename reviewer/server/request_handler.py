@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from http.server import BaseHTTPRequestHandler
 
-from server.router import Router
+from reviewer.server.router import Router
 from urllib.parse import urlparse, parse_qs
 
 

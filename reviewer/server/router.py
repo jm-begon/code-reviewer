@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
-from server.pages import HomePage, ReviewPage
+from reviewer.server.pages import HomePage, ReviewPage
 
 from jinja2.exceptions import TemplateNotFound
 
@@ -9,7 +9,7 @@ from jinja2.exceptions import TemplateNotFound
 DEBUG = True
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_DIR = BASE_DIR / 'server' / 'templates'
+HTML_DIR = BASE_DIR / 'server' / 'html'
 
 routes = {
     '/': HomePage,
@@ -41,7 +41,7 @@ class Router():
         """
         """
         # Routes the files of type .css or .js
-        path = Path(TEMPLATES_DIR / self.path[1:])  # [???] not the best way ?
+        path = Path(HTML_DIR / self.path[1:])  # [???] not the best way ?
         if path.suffix in content_type:
             with path.open('r') as f:
                 content = f.read()
