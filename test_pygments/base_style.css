@@ -1,0 +1,91 @@
+body
+{
+	display: block;
+    font-family: monospace;
+	/*background-color: rgb(40, 41, 35);*/
+	/*color : #f8f8f2;*/
+}
+
+table {
+  
+/*  width: 50%;*/
+}
+
+
+/*tr:hover {background-color:rgb(200, 200, 200);}*/
+
+/*.table_entry:hover .line_number  {
+	background-color: rgba(217, 237, 255, 0.75);
+}*/
+
+button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled) {
+    cursor: pointer;
+}
+
+
+
+.code {
+	margin-top: 5em;
+	margin-left: auto;
+  	margin-right: auto;
+	border-spacing: 0;
+	font-size : 1.5em;
+	border: 1px solid rgb(150, 150, 150);
+	background-color: rgb(253, 253, 253);
+	border-radius: 4px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.comment_button {
+    border-radius: 30%;
+    background: #fff;
+    font-size: 12px;
+    color: #1f75cb;
+    border: 1px solid #1f75cb;
+    width: 24px;
+    height: 24px;
+    opacity: 0;
+    margin-left: -84px;
+    position: absolute;
+}
+
+.comment_button:hover {
+	background: #1f75cb;
+	color: #fff;
+}
+
+.markup {
+	margin-left: -61px;
+}
+
+.marker {
+	font-size: 15px;
+	margin-left: -1px;
+}
+
+.line_number_hover .comment_button {
+	opacity: 1;
+}
+
+.bubble {
+	font-size: 17px;
+	margin-left: -3px;
+}
+
+.line_number {
+	color : rgb(150, 150, 150);
+	text-align: right;
+	padding-left: 2em;
+	padding-right: 0.5em;
+	border-right: 1px solid rgba(150, 150, 150, 0.5);
+}
+
+.line_number_hover {
+	background-color: rgba(217, 237, 255, 0.85);
+}
+
+.line_of_code {
+	padding-left: 0.5em;
+	padding-right: 1em;
+}

@@ -1,0 +1,31 @@
+</table>
+
+<span id="debug"></span>
+
+<script>
+tables_entries = document.getElementsByClassName("table_entry");
+for(i = 0; i < tables_entries.length; i++) {
+	// tables_entries[i].style.backgroundColor = "red";
+	tables_entries[i].onmouseover = function() {mouseOver(this)};
+	tables_entries[i].onmouseout = function() {mouseOut(this)};
+}
+
+function mouseOver(element) {
+	line_num_elem = element.childNodes[1];
+	line_num_elem.className += " line_number_hover";
+
+	// c = line_number.childNodes;
+	// var txt = "";
+	//   var i;
+	//   for (i = 0; i < c.length; i++) {
+	//     txt = txt + c[i].nodeName + "<br>";
+	//   }
+	//  document.getElementById("debug").innerHTML = txt;
+}
+
+function mouseOut(element) {
+	element.childNodes[1].className = "line_number";
+}
+</script>
+</body>
+</html>
