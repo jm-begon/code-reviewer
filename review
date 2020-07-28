@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+
+from pathlib import Path
+from http.server import HTTPServer
+from reviewer.server.request_handler import MakeRequestHandlerAt
+
+
+HOST = 'localhost'
+
+parser = argparse.ArgumentParser(description='start a code-reviewer interface '
+    'to review the code in the current working directory')
+parser.add_argument('directory', nargs='?', help='path of directory to be '
+    'reviewed if not the current working directory', default=os.getcwd())
+parser.add_argument('--port', help='port at which the server runs', type=int, 
+    default=8080)
+args = parser.parse_args()
+
+
+RequestHandler = MakeRequestHandlerAt(Path(args.directory))
+server = HTTPServer((HOST, args.port), RequestHandler)
+try:
+    print(f'Server started at http://{HOST}:{args.port}'.format(HOST, args.port))
+    os.system(f'open http://{HOST}:{args.port}')  # [!!!] maybe only ok for macOS
+    server.serve_forever()
+
+except KeyboardInterrupt:
+    print('\nGoodbye')
+    server.server_close()

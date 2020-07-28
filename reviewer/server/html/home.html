@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block head %}
+    {{ super() }} {# to keep the default content of the head block #}
+    {# and here we can add other things #}
+{% endblock %}
+{% block content %}
+    <p>
+        Working directory: <code><a href='/'>{{cwd}}</a></code><br />
+        Relative path: <code>{{path}}</code>
+    </p>
+
+    {% if not dirs and not files %}
+        <p>Invalid or empty directory</p>
+    {% else %}
+        <p>Subdirectories</p>
+        <ul>
+            {% if not dirs %}
+                <li><span class='text-muted'>No subdirectories</span></li>
+            {% endif %}
+            {% for dir in dirs %}
+                <li><a href='/?path={{path / dir}}'>{{dir}}</a></li>
+            {% endfor %}
+        </ul>
+        <p>Files to comment</p>
+        <ul>
+            {% if not files %}
+                <li><span class='text-muted'>No files</span></li>
+            {% endif %}
+            {% for file in files %}
+                <li><a href='/review?file={{path / file}}'>{{file}}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

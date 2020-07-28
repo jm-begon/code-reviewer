@@ -1,8 +1,19 @@
 # -*- coding: utf-8 -*-
 from http.server import BaseHTTPRequestHandler
 
-from server.router import Router
+from reviewer.server.router import Router
 from urllib.parse import urlparse, parse_qs
+from pathlib import Path
+
+
+def MakeRequestHandlerAt(cwd):
+    """
+    """
+    class CustomHandler(RequestHandler):
+        def __init__(self, *args, **kwargs):
+            self.cwd = cwd
+            super().__init__(*args, **kwargs)
+    return CustomHandler
 
 
 class RequestHandler(BaseHTTPRequestHandler):
@@ -44,7 +55,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         data = parse_qs(url.query)
 
         # Create the Router responsible for retrieving the response
-        router = Router(path, data)
+        router = Router(self.cwd, path, data)
         status, headers, content = router.get_response()
 
         self.respond(status, headers, content)
@@ -53,16 +64,15 @@ class RequestHandler(BaseHTTPRequestHandler):
         """
         POST request stub
         """
-        # Parse data if any
-        if 'content-length' in self.headers:
-            data_length = int(self.headers['content-length'])
-            # data = parse_qs(self.rfile.read(data_length))
-            data = self.rfile.read(data_length)
-        else:
-            data = {}
+        pass
+        # if 'content-length' in self.headers:
+        #     data_length = int(self.headers['content-length'])
+        #     data = self.rfile.read(data_length)
+        # else:
+        #     data = {}
 
-        # Create the Router responsible for retrieving the response
-        router = Router(self.path, data)
-        status, headers, content = router.get_response()
+        # # Create the Router responsible for retrieving the response
+        # router = Router(self.path, data)
+        # status, headers, content = router.get_response()
 
-        self.respond(status, headers, content)
+        # self.respond(status, headers, content)
