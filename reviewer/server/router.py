@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
-from reviewer.server.pages import HomePage, ReviewPage
+from reviewer.server.pages import HomePage, ReviewPage, Save
 
 from jinja2.exceptions import TemplateNotFound
 
 
-DEBUG = False
+DEBUG = True
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 HTML_DIR = BASE_DIR / 'server' / 'html'
 
 routes = {
     '/': HomePage,
-    '/review': ReviewPage
+    '/review': ReviewPage,
+    '/save': Save,
 }
 content_type = {
     '.css': 'text/css',
@@ -55,7 +56,7 @@ class Router():
         except (KeyError, TemplateNotFound) as e:
             # Route does not exist
             if DEBUG:
-                print(e)
+                print('TemplateNotFound:', e)
             return 404, {'Content-type': 'text/plain'}, '404 Not Found'
 
         except Exception as e:

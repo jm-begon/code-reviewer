@@ -5,12 +5,17 @@
     {# and here we can add other things #}
 {% endblock %}
 {% block content %}
+    <p>
+        <a href='#' onclick='save()';>Save</a>
+        <a href='#' onclick='html()';>Export to html</a>
+        <a href='#' onclick='pdf()';>Export to pdf</a>
+    </p>
     <table id="code-table">
     	<tbody id="code-table-tbody">
     		{% for line in lines %}
-    			<tr onclick="comment(this);">
+                <tr data-line="{{loop.index}}" onclick="comment(this);">
     				<td><code>{{loop.index}}</code></td>
-    				<td><code style='white-space: pre;'>{{line}}</code></td>
+    				<td><code style='white-space: pre;'>{{ line | safe }}</code></td>
     			</tr>
     		{% endfor %}
     	</tbody>
@@ -18,15 +23,49 @@
     <script type="text/javascript">
         var table = document.getElementById('code-table');
         var tbody = document.getElementById('code-table-tbody');
-        function comment(td) {
+        function comment(tr) {
             var input_row = document.createElement('tr');
-            input_row.innerHTML = '<td></td><td><input type="text" placeholder="Comment"/></td>';
-            tbody.insertBefore(input_row, td);
+            var code_line = tr.dataset.line;
+            input_row.innerHTML = `<td></td><td style="position: relative;"><input data-line="${code_line}" onblur="blur_comment(this);" type="text" placeholder="Comment"/></td>`;
+            tbody.insertBefore(input_row, tr);
+            input_row.getElementsByTagName('input')[0].focus();
+        }
+        function blur_comment(input) {
+            if (input.value == "") {
+                var input_row = input.parentElement.parentElement;
+                input_row.remove();
+            }
+            else {
+                console.log('TODO: save');
+            }
+        }
+        function save() {
+            annotations = document.getElementsByTagName('input');
+            lines = [];
+            comments = [];
+            for (var i = 0; i < annotations.length; i++) {
+                x = annotations[i];
+                lines.push(encodeURIComponent(x.dataset.line));
+                comments.push(encodeURIComponent(x.value));
+            }
+            // TODO: Save in an asynchronous request
+            document.location = `save?file={{ file | urlencode }}&comments=${comments}&lines=${lines}`;
         }
     </script>
     <style type="text/css">
+        table {
+            background-color: rgb(240, 240, 240);
+            border-radius: 4px;
+        }
+        table th, td {
+            border-collpase: collpase;
+        }
+        table tr:hover {
+            background-color: rgb(230, 230, 230);
+        }
         table input {
             width: 100%;
         }
+        {{ style | safe }}
     </style>
 {% endblock %}
