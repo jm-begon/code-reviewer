@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Review{% endblock %}
+{% block head %}
+    {{ super() }} {# to keep the default content of the head block #}
+    {# and here we can add other things #}
+{% endblock %}
+{% block content %}
+    <p>
+        <a href='#' onclick='save()';>Save</a>
+        <a href='#' onclick='html()';>Export to html</a>
+        <a href='#' onclick='pdf()';>Export to pdf</a>
+    </p>
+    <table id="code-table">
+    	<tbody id="code-table-tbody">
+    		{% for line in lines %}
+                <tr data-line="{{loop.index}}" onclick="comment(this);">
+    				<td><code>{{loop.index}}</code></td>
+    				<td><code style='white-space: pre;'>{{ line | safe }}</code></td>
+    			</tr>
+    		{% endfor %}
+    	</tbody>
+    </table>
+    <script type="text/javascript">
+
+        const TBODY = document.getElementById('code-table-tbody');
+
+        function comment(tr) {
+            var input_row = document.createElement('tr');
+            var code_line = tr.dataset.line;
+            input_row.innerHTML = `
+                <td></td>
+                <td style="position: relative;">
+                    <div class="input-group input-group-sm" style="font-size: .6em;">
+                        <input
+                            class="form-control"
+                            data-line="${code_line}"
+                            onblur="blur_comment(this);"
+                            type="text"
+                            placeholder="Comment"/>
+                    </div>
+                </td>`;
+            TBODY.insertBefore(input_row, tr);
+            input_row.getElementsByTagName('input')[0].focus();
+        }
+
+        /* Either save or delete comment when leaving a comment input */
+        function blur_comment(input) {
+
+            var http_request = new XMLHttpRequest();
+
+            if (input.value == "") {
+                var url = `remove_comment?filename={{ filename | urlencode }}&line=${input.dataset.line}`;
+                var input_row = input.parentElement.parentElement;
+                input_row.remove();
+            }
+            else {
+                var line = input.dataset.line;
+                var url = `add_comment?filename={{ filename | urlencode }}&comment=${input.value}&line=${line}`;
+            }
+
+            http_request.open('GET', url);
+            http_request.send();
+            http_request.onreadystatechange=(e)=>{
+                // TODO: display a small confirmation somewhere ? according to status code
+            }
+        }
+
+        function save() {
+            var http_request = new XMLHttpRequest();
+            http_request.open('GET', `save?filename={{ filename | urlencode}}`);
+            http_request.send();
+            http_request.onreadystatechange=(e)=>{
+                // TODO: display a small confirmation somewhere ? according to status code
+            }
+        }
+        function export_html() {
+            // TODO: create an html version of the annotated code
+        }
+        function export_pdf() {
+            // TODO: create a pdf version of the annotated code
+        }
+
+    </script>
+
+    <style type="text/css">
+        table {
+            background-color: rgb(240, 240, 240);
+            border-radius: 4px;
+        }
+        table th, td {
+            border-collpase: collpase;
+        }
+        table td:first-child {
+            text-align: right;
+            padding-right: 5px;
+        }
+        table tr:hover {
+            background-color: rgb(230, 230, 230);
+        }
+        table input {
+            width: 100%;
+        }
+        {{ style | safe }}
+    </style>
+{% endblock %}

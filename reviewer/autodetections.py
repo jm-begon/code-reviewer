@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-# In all languages, we use \$?\w+ as a variable name match
+# We use \$?\w+ as a variable name match. TODO: this should change.
 matches = {
     'trailing_new_lines': (r'\n[\s]+\Z', r'\n'),
     'trailing_whitespaces': (r'[ \t]+$', '\n'),
