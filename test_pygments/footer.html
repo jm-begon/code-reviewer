@@ -26,6 +26,29 @@ function mouseOver(element) {
 function mouseOut(element) {
 	element.childNodes[1].className = "line_number";
 }
+
+function mark(element) {
+	table_entry = element.parentNode.parentNode.parentNode;
+	table_entry_color = table_entry.style.backgroundColor;
+	red = "rgba(245, 64, 64, 0.3)";
+	orange = "rgba(245, 184, 64, 0.4)";
+	green = "rgba(70, 245, 64, 0.3)";
+
+	if(table_entry_color == "") {
+		table_entry.style.backgroundColor = red;
+	} 
+	else if (table_entry_color == red) {
+		table_entry.style.backgroundColor = orange;
+	}
+	else if (table_entry_color == orange) {
+		table_entry.style.backgroundColor = green;
+	}
+	else {
+		table_entry.style.backgroundColor = "";
+	}
+	// document.getElementById("debug").innerHTML = element.parentNode.parentNode.parentNode.style.backgroundColor;
+	// element.parentNode.parentNode.parentNode.style.backgroundColor = "red";
+}
 </script>
 </body>
 </html>

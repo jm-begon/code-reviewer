@@ -26,7 +26,7 @@ class LineOfCode():
 		ret = "<tr class=\"table_entry\">\n"
 		ret += "\t<td class=\"line_number\">\n\t\t" +\
 				'<div><button class="comment_button" type="submit""><i class="far fa-comment bubble"></i></button></div>\n\t\t'  +\
-				'<div><button class="comment_button markup" type="submit""><i class="fas fa-map-marker-alt marker"></i></button></div>\n\t\t'  +\
+				'<div><button class="comment_button markup" type="submit" onclick="mark(this)"><i class="fas fa-map-marker-alt marker"></i></button></div>\n\t\t'  +\
 				'<div>' + str(self.line_number) + "</div>\n" +\
 				"\t</td>\n";
 

@@ -1,32 +1,81 @@
+<!-- {% extends 'base.html' %}
+{% block title %}Review{% endblock %}
+{% block head %}
+	{{ super() }} {# to keep the default content of the head block #}
+	{# and here we can add other things #}
+{% endblock %}
+{% block content %}
+	<table id="code-table">
+		<tbody id="code-table-tbody">
+			{% for line in lines %}
+				<tr onclick="comment(this);">
+					<td><code>{{loop.index}}</code></td>
+					<td><code style='white-space: pre;'>{{line}}</code></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<script type="text/javascript">
+		var table = document.getElementById('code-table');
+		var tbody = document.getElementById('code-table-tbody');
+		function comment(td) {
+			var input_row = document.createElement('tr');
+			input_row.innerHTML = '<td></td><td><input type="text" placeholder="Comment"/></td>';
+			tbody.insertBefore(input_row, td);
+		}
+	</script>
+	<style type="text/css">
+		table input {
+			width: 100%;
+		}
+	</style>
+{% endblock %} -->
+
 {% extends 'base.html' %}
 {% block title %}Review{% endblock %}
 {% block head %}
-    {{ super() }} {# to keep the default content of the head block #}
-    {# and here we can add other things #}
+	{{ super() }} {# to keep the default content of the head block #}
+	{# and here we can add other things #}
+	<link rel="review_stylesheet" type="text/css" href="style.css">
+	<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 {% endblock %}
 {% block content %}
-    <table id="code-table">
-    	<tbody id="code-table-tbody">
-    		{% for line in lines %}
-    			<tr onclick="comment(this);">
-    				<td><code>{{loop.index}}</code></td>
-    				<td><code style='white-space: pre;'>{{line}}</code></td>
-    			</tr>
-    		{% endfor %}
-    	</tbody>
-    </table>
-    <script type="text/javascript">
-        var table = document.getElementById('code-table');
-        var tbody = document.getElementById('code-table-tbody');
-        function comment(td) {
-            var input_row = document.createElement('tr');
-            input_row.innerHTML = '<td></td><td><input type="text" placeholder="Comment"/></td>';
-            tbody.insertBefore(input_row, td);
-        }
-    </script>
-    <style type="text/css">
-        table input {
-            width: 100%;
-        }
-    </style>
+	<table class="code">
+		
+		<tr class="table_entry">
+			<td class="line_number">
+				<div><button class="comment_button" type="submit""><i class="far fa-comment bubble"></i></button></div>
+				<div><button class="comment_button markup" type="submit" onclick="mark(this)"><i class="fas fa-map-marker-alt marker"></i></button></div>
+				<div>1</div>
+			</td>
+			<td class="line_of_code">
+				<span class="c1"># Solve the quadratic equation ax**2 + bx + c = 0</span>
+			</td>
+		</tr>
+	</table>
+	<table id="code-table">
+		<tbody id="code-table-tbody">
+			{% for line in lines %}
+				<tr onclick="comment(this);">
+					<td><code>{{loop.index}}</code></td>
+					<td><code style='white-space: pre;'>{{line}}</code></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<script type="text/javascript">
+		var table = document.getElementById('code-table');
+		var tbody = document.getElementById('code-table-tbody');
+		function comment(td) {
+			var input_row = document.createElement('tr');
+			input_row.innerHTML = '<td></td><td><input type="text" placeholder="Comment"/></td>';
+			tbody.insertBefore(input_row, td);
+		}
+	</script>
+	<style type="text/css">
+		table input {
+			width: 100%;
+		}
+	</style>
 {% endblock %}
+
