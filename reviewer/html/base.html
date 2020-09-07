@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+    <meta charset='utf-8' />
+    <title>Code Reviewer - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+    {% endblock %}
+</head>
+<body>
+    <!-- Reponsible navigation bar model provided by bootstrap -->
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg fixed-top">
+        <a class="navbar-brand" href="/">
+            Code Reviewer <small style="font-size: 0.7em;">v1.0</small>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_links">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar_links">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item>">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <!-- TODO: add other links or remove this one -->
+                <li class="nav-item>">
+                    <a class="nav-link" href="/">Other links?</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- End of the navigation bar -->
+
+    <div class="container my-4 position-relative" style="top: 56px;">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script type="text/javascript" src="bootstrap/js/jquery.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/popper.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -19,7 +19,7 @@
                 <li><span class='text-muted'>No subdirectories</span></li>
             {% endif %}
             {% for dir in dirs %}
-                <li><a href='/?path={{path / dir}}'>{{dir}}</a></li>
+                <li><a href='/?path={{path / dir | urlencode }}'>{{dir}}</a></li>
             {% endfor %}
         </ul>
         <p>Files to comment</p>
@@ -28,7 +28,7 @@
                 <li><span class='text-muted'>No files</span></li>
             {% endif %}
             {% for file in files %}
-                <li><a href='/review?file={{path / file}}'>{{file}}</a></li>
+                <li><a href='/review?filename={{path / file | urlencode }}'>{{file}}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
