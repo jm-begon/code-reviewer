@@ -11,18 +11,47 @@
         <a href='#' onclick='pdf()';>Export to pdf</a>
     </p>
     <table id="code-table">
-    	<tbody id="code-table-tbody">
-    		{% for line in lines %}
-                <tr data-line="{{loop.index}}" onclick="comment(this);">
-    				<td><code>{{loop.index}}</code></td>
-    				<td><code style='white-space: pre;'>{{ line | safe }}</code></td>
-    			</tr>
-    		{% endfor %}
-    	</tbody>
+        <tbody id="code-table-tbody">
+            {% for line in lines %}
+                <tr class="code-table-entry" data-line="{{loop.index}}">
+                    <td class="line_number">
+                        <div><button class="comment_button" type="submit""><i class="far fa-comment bubble"></i></button></div>
+                        <div><button class="comment_button markup" type="submit" onclick="mark(this)"><i class="fas fa-map-marker-alt marker"></i></button></div>
+                        <div>{{loop.index}}</div>
+                    </td>
+
+                    <td class="line_of_code"><code>{{ line | safe }}</code></td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
+
     <script type="text/javascript">
 
         const TBODY = document.getElementById('code-table-tbody');
+
+        function mark(element) {
+            table_entry = element.parentNode.parentNode.parentNode;
+            table_entry_color = table_entry.style.backgroundColor;
+            red = "rgba(245, 64, 64, 0.3)";
+            orange = "rgba(245, 184, 64, 0.4)";
+            green = "rgba(70, 245, 64, 0.3)";
+
+            if(table_entry_color == "") {
+                table_entry.style.backgroundColor = red;
+            } 
+            else if (table_entry_color == red) {
+                table_entry.style.backgroundColor = orange;
+            }
+            else if (table_entry_color == orange) {
+                table_entry.style.backgroundColor = green;
+            }
+            else {
+                table_entry.style.backgroundColor = "";
+            }
+            // document.getElementById("debug").innerHTML = element.parentNode.parentNode.parentNode.style.backgroundColor;
+            // element.parentNode.parentNode.parentNode.style.backgroundColor = "red";
+        }
 
         function comment(tr) {
             var input_row = document.createElement('tr');
@@ -83,23 +112,109 @@
     </script>
 
     <style type="text/css">
-        table {
-            background-color: rgb(240, 240, 240);
+
+
+
+
+        /*tr:hover {background-color:rgb(200, 200, 200);}*/
+
+        .code-table-entry:hover .line_number .comment_button{
+            opacity: 1;
+        }
+
+        .code-table-entry:hover .line_number  {
+            background-color: rgba(217, 237, 255, 0.75);
+        }
+
+/*        button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled) {
+            cursor: pointer;
+        }*/
+
+
+
+        #code-table {
+/*           display: block;
+           font-family: monospace;*/
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size : 1.5em;
+            border: 1px solid rgb(150, 150, 150);
+            background-color: rgb(253, 253, 253);
             border-radius: 4px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            line-height: 120%;
+            font-size: 0.85rem;
+            line-height: 1.1875rem;
+            font-family: "Menlo", "DejaVu Sans Mono", "Liberation Mono", "Consolas", "Ubuntu Mono", "Courier New", "andale mono", "lucida console", monospace;
+            /*overflow-x: auto;*/
+            /*overflow-y: hidden;*/
+            /*white-space: nowrap;*/
+
         }
-        table th, td {
-            border-collpase: collpase;
+
+        #code-table-body {
+
         }
-        table td:first-child {
+
+        .comment_button {
+            border-radius: 30%;
+            background: #fff;
+            font-size: 12px;
+            color: #1f75cb;
+            border: 1px solid #1f75cb;
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            margin-left: -84px;
+            position: absolute;
+        }
+
+        .comment_button:hover {
+            background: #1f75cb;
+            color: #fff;
+        }
+
+        .markup {
+            margin-left: -61px;
+        }
+
+        .marker {
+            font-size: 15px;
+            margin-left: -1px;
+        }
+
+        .line_number_hover .comment_button {
+            opacity: 1;
+        }
+
+        .bubble {
+            font-size: 17px;
+            margin-left: -3px;
+        }
+
+        .line_number {
+            color : rgb(150, 150, 150);
             text-align: right;
-            padding-right: 5px;
+            vertical-align : top;
+            padding-left: 5em;
+            padding-right: 0.5em;
+            border-right: 1px solid rgba(150, 150, 150, 0.5);
         }
-        table tr:hover {
-            background-color: rgb(230, 230, 230);
+
+        .line_number_hover {
+            background-color: rgba(217, 237, 255, 0.85);
         }
-        table input {
+
+        .line_of_code {
+            padding-left: 0.5em;
+            padding-right: 5em;
+            white-space: pre-wrap;
+            font-size: 0.90rem;
             width: 100%;
         }
+
+
         {{ style | safe }}
     </style>
 {% endblock %}

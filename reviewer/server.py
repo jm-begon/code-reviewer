@@ -8,7 +8,7 @@ from pathlib import Path
 from reviewer.annotations import ReviewedCode
 
 
-DEBUG = True
+DEBUG = False
 
 BASE_DIR = Path(__file__).resolve().parent
 HTML_DIR = BASE_DIR / 'html'
