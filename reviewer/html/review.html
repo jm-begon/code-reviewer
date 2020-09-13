@@ -13,79 +13,181 @@
     <table id="code-table">
         <tbody id="code-table-tbody">
             {% for line in lines %}
-                <tr class="code-table-entry" data-line="{{loop.index}}">
-                    <td class="line_number">
-                        <div><button class="comment_button" type="submit""><i class="far fa-comment bubble"></i></button></div>
-                        <div><button class="comment_button markup" type="submit" onclick="mark(this)"><i class="fas fa-map-marker-alt marker"></i></button></div>
+                <tr id="line-{{loop.index}}" class="code-table-entry" data-line="{{loop.index}}"
+                data-color="none">
+                    <td class="line-number">
+                        <div><button class="base-button" type="submit" onclick="comment(this)"><i class="far fa-comment bubble"></i></button></div>
+                        <div><button class="base-button markup" type="submit" onclick="mark(this)"><i class="fas fa-map-marker-alt marker"></i></button></div>
                         <div>{{loop.index}}</div>
                     </td>
 
-                    <td class="line_of_code"><code>{{ line | safe }}</code></td>
+                    <td class="line-of-code"><code>{{ line | safe }}</code></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <script type="text/javascript">
+    <span id="debug"></span>
 
+    <script type="text/javascript">
         const TBODY = document.getElementById('code-table-tbody');
 
-        function mark(element) {
-            table_entry = element.parentNode.parentNode.parentNode;
-            table_entry_color = table_entry.style.backgroundColor;
-            red = "rgba(245, 64, 64, 0.3)";
-            orange = "rgba(245, 184, 64, 0.4)";
-            green = "rgba(70, 245, 64, 0.3)";
+        function mark(button) {
+            var tr = button.parentNode.parentNode.parentNode;
+            var prev_color;
+            var comment = document.getElementById("comment-" + tr.id);
 
-            if(table_entry_color == "") {
-                table_entry.style.backgroundColor = red;
-            } 
-            else if (table_entry_color == red) {
-                table_entry.style.backgroundColor = orange;
+            if ($(tr).hasClass("blue")) {
+                prev_color = "blue";
+                $(tr).removeClass("blue");
+                tr.className += " red";
+                tr.dataset.color = "red";
             }
-            else if (table_entry_color == orange) {
-                table_entry.style.backgroundColor = green;
+            else if($(tr).hasClass("red")) {
+                prev_color = "red";
+                $(tr).removeClass("red");
+                tr.className += " green";
+                tr.dataset.color = "green";
+            } 
+            else if ($(tr).hasClass("green")) {
+                prev_color = "green";
+                $(tr).removeClass("green");
+
+                if(comment != null) {
+                    tr.dataset.color = "blue";
+                    tr.className += " blue";
+                } 
+                else {
+                    tr.dataset.color = "none";
+                }
             }
             else {
-                table_entry.style.backgroundColor = "";
+                prev_color = "blue";
+                tr.className += " blue";
+                tr.dataset.color = "blue";
             }
-            // document.getElementById("debug").innerHTML = element.parentNode.parentNode.parentNode.style.backgroundColor;
-            // element.parentNode.parentNode.parentNode.style.backgroundColor = "red";
+
+            if(comment != null) {
+                $(comment).removeClass(prev_color);
+                comment.className += " " + tr.dataset.color;
+            }
+
+
+
+            // document.getElementById("debug").innerHTML =
         }
 
-        function comment(tr) {
+        function comment(button) {
+            var tr = button.parentNode.parentNode.parentNode;
+
+            if($(tr).hasClass("commented")) return;
+
             var input_row = document.createElement('tr');
             var code_line = tr.dataset.line;
             input_row.innerHTML = `
-                <td></td>
+
+                <td class="comment-option">
+                    <div class="down_arrow">&#8595</div>
+                </td>
                 <td style="position: relative;">
-                    <div class="input-group input-group-sm" style="font-size: .6em;">
-                        <input
-                            class="form-control"
+                    <div class="input-group input-group-sm comment">
+                        <div><button class="base-button delete" type="submit" onclick="delete_comment(this)"><i class="fa fa-times cross"></i></button></div>
+                        <textarea 
                             data-line="${code_line}"
+                            name="comment" 
+                            class="form-control comment-text"
                             onblur="blur_comment(this);"
                             type="text"
-                            placeholder="Comment"/>
+                            placeholder="Comment"
+                        ></textarea>                     
                     </div>
                 </td>`;
+
+            input_row.id = "comment-" + tr.id;
+            input_row.dataset.line = tr.dataset.line;
+            input_row.className += " comment-line";
             TBODY.insertBefore(input_row, tr);
-            input_row.getElementsByTagName('input')[0].focus();
+
+            tr.className += " commented";
+
+            if(tr.dataset.color != "none") {
+                input_row.className += " " + tr.dataset.color;
+            } 
+            else {
+                tr.className += " blue";
+            }
+            
+            
+            // input_row.getElementsByTagName('input')[0].focus();
         }
+
+        // imported from https://jsfiddle.net/cferdinandi/mqwwpL6u/
+        // automatically expends a textarea
+        var autoExpand = function (field) {
+
+            // Reset field height
+            field.style.height = 'inherit';
+
+            // Get the computed styles for the element
+            var computed = window.getComputedStyle(field);
+
+            // Calculate the height
+            var height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+                         + parseInt(computed.getPropertyValue('padding-top'), 10)
+                         + field.scrollHeight
+                         + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+                         + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+
+            field.style.height = height + 'px';
+
+        };
+
+        // listen for user input
+        document.addEventListener('input', function (event) {
+            if (!$(event.target).hasClass('comment-text')) return;
+            autoExpand(event.target);
+        }, false);
+
+        document.addEventListener('keydown', function (event) {
+            if (!$(event.target).hasClass('comment-text')) return;
+            var keyCode = event.keyCode || event.which;
+
+            var textarea = event.target;
+            if (keyCode == 9) {
+                event.preventDefault();
+
+                var s = textarea.selectionStart;
+                textarea.value = textarea.value.substring(0,textarea.selectionStart) + "\t" + textarea.value.substring(textarea.selectionEnd);
+                textarea.selectionEnd = s+1; 
+            }
+        }, false);
+
 
         /* Either save or delete comment when leaving a comment input */
         function blur_comment(input) {
 
             var http_request = new XMLHttpRequest();
+            var line = input.dataset.line;
+            var url = `add_comment?filename={{ filename | urlencode }}&comment=${input.value}&line=${line}`;
 
-            if (input.value == "") {
-                var url = `remove_comment?filename={{ filename | urlencode }}&line=${input.dataset.line}`;
-                var input_row = input.parentElement.parentElement;
-                input_row.remove();
+            http_request.open('GET', url);
+            http_request.send();
+            http_request.onreadystatechange=(e)=>{
+                // TODO: display a small confirmation somewhere ? according to status code
             }
-            else {
-                var line = input.dataset.line;
-                var url = `add_comment?filename={{ filename | urlencode }}&comment=${input.value}&line=${line}`;
-            }
+        }
+
+        function delete_comment(input) {
+            var http_request = new XMLHttpRequest();
+            var url = `remove_comment?filename={{ filename | urlencode }}&line=${input.dataset.line}`;
+
+            var input_row = input.parentElement.parentElement.parentElement.parentElement;
+            var line_number = input_row.dataset.line;
+            input_row.remove();
+            
+            var commented_line = document.getElementById("line-" + line_number);
+            $(commented_line).removeClass("commented");
+            $(commented_line).removeClass("blue");
 
             http_request.open('GET', url);
             http_request.send();
@@ -118,13 +220,7 @@
 
         /*tr:hover {background-color:rgb(200, 200, 200);}*/
 
-        .code-table-entry:hover .line_number .comment_button{
-            opacity: 1;
-        }
-
-        .code-table-entry:hover .line_number  {
-            background-color: rgba(217, 237, 255, 0.75);
-        }
+        
 
 /*        button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled) {
             cursor: pointer;
@@ -157,7 +253,19 @@
 
         }
 
-        .comment_button {
+        .code-table-entry:hover .line-number .base-button{
+            opacity: 1;
+        }
+
+        .code-table-entry:hover .line-number  {
+            background-color: rgba(220, 240, 258);
+        }
+
+        .comment-line:hover .base-button{
+            opacity: 1;
+        }
+
+        .base-button {
             border-radius: 30%;
             background: #fff;
             font-size: 12px;
@@ -170,9 +278,18 @@
             position: absolute;
         }
 
-        .comment_button:hover {
+        .base-button:hover {
             background: #1f75cb;
             color: #fff;
+        }
+
+        .delete {
+            margin-left: -90px;
+            font-size: 17px;
+        }
+
+        .cross {
+            margin-left: -1px;
         }
 
         .markup {
@@ -184,16 +301,12 @@
             margin-left: -1px;
         }
 
-        .line_number_hover .comment_button {
-            opacity: 1;
-        }
-
         .bubble {
             font-size: 17px;
             margin-left: -3px;
         }
 
-        .line_number {
+        .line-number {
             color : rgb(150, 150, 150);
             text-align: right;
             vertical-align : top;
@@ -202,17 +315,71 @@
             border-right: 1px solid rgba(150, 150, 150, 0.5);
         }
 
-        .line_number_hover {
-            background-color: rgba(217, 237, 255, 0.85);
-        }
-
-        .line_of_code {
+        .line-of-code {
             padding-left: 0.5em;
             padding-right: 5em;
             white-space: pre-wrap;
             font-size: 0.90rem;
             width: 100%;
         }
+
+        .comment-line {
+            background-color: rgba(220, 240, 258);
+        }
+
+        .comment {
+            font-size: .6em;
+            padding-top: 2em;
+            padding-bottom: 2em;
+            padding-left: 3em;
+            padding-right: 3em;
+        }
+
+        .comment-text {
+            border-width: thick;
+            resize: none;
+        }
+
+        .red {
+            background: rgba(245, 64, 64, 0.3);
+        }
+
+        .orange {
+            background: rgba(245, 184, 64, 0.4);
+        }
+
+        .green {
+            background: rgba(70, 245, 64, 0.3);
+        }
+
+        .blue {
+            background: rgba(220, 240, 258);
+        }
+
+        .blue .line-of-code {
+            background: rgba(265, 265, 265, 0.5);
+        }
+
+        .red .line-of-code {
+            background: rgba(265, 265, 265, 0.5);
+        }
+
+        .green .line-of-code {
+            background: rgba(265, 265, 265, 0.5);
+        }
+
+        .comment-option {
+            border-right: 1px solid rgba(150, 150, 150, 0.5);
+            vertical-align : bottom;
+        }
+
+        .down_arrow {
+            color : rgb(150, 150, 150);
+            text-align: right;
+            padding-right : 8px;
+            font-size: 1.5em;
+        }
+
 
 
         {{ style | safe }}
