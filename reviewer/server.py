@@ -8,7 +8,7 @@ from pathlib import Path
 from reviewer.annotations import ReviewedCode
 
 
-DEBUG = False
+DEBUG = True
 
 BASE_DIR = Path(__file__).resolve().parent
 HTML_DIR = BASE_DIR / 'html'
@@ -83,7 +83,15 @@ class RequestHandler(BaseHTTPRequestHandler):
         """
         POST request stub
         """
-        pass
+        url = urlparse(self.path)
+        path = url.path
+        data = parse_qs(url.query)
+
+        content_len = int(self.headers.get('Content-Length'))
+        post_body = self.rfile.read(content_len)
+        
+        data["body"] = [post_body.decode('ascii')]
+        self.route(path, data)        
 
     def respond(self, status, headers, content):
         """
@@ -188,16 +196,35 @@ class RequestHandler(BaseHTTPRequestHandler):
         markups = self.codes[filename].get_markups()
         comments = self.codes[filename].get_comments()
 
-        # TODO: use markups and comments to display them in the review_page
-        infos = {'lines': lines, 'style': style, 'filename': filename}
+        print("comments:")
+        print(comments)
+        infos = {'lines': lines, 'style': style, 'markups': markups, \
+                'comments' : comments, 'filename': filename}
         return env.get_template('review.html').render(**infos)
+
+    def _add_mark(self, data):
+        filename = data['filename'][0]
+        if not filename in self.codes:
+            return 403
+
+        self.codes[filename].add_mark(int(data['line'][0]), data['color'][0])
+        return 200
+
+    def _remove_mark(self, data):
+        filename = data['filename'][0]
+        if not filename in self.codes:
+            return 403
+
+        self.codes[filename].remove_mark(int(data['line'][0]))
+        return 200
+
 
     def _add_comment(self, data):
         filename = data['filename'][0]
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].add_comment(data['line'][0], data['comment'][0])
+        self.codes[filename].add_comment(int(data['line'][0]), data['body'][0])
         return 200
 
     def _remove_comment(self, data):
@@ -205,7 +232,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].remove_comment(data['line'][0])
+        self.codes[filename].remove_comment(int(data['line'][0]))
         return 200
 
     def _save(self, data):

@@ -13,8 +13,61 @@
     <table id="code-table">
         <tbody id="code-table-tbody">
             {% for line in lines %}
-                <tr id="line-{{loop.index}}" class="code-table-entry" data-line="{{loop.index}}"
-                data-color="none">
+
+                {# import save comments and markups #}
+                {% if loop.index in comments %}
+
+                    {# match comment color with line color #}
+                    {% set classes = "comment-line" %}
+                    {% if loop.index in markups %}
+                        {% set classes = classes + " " + markups[loop.index] %}
+                    {% endif %}
+
+                    <tr 
+                        id="comment-line-{{loop.index}}" 
+                        class="{{classes}}"
+                        data-line="{{loop.index}}"
+                    >
+                        <td class="comment-option">
+                            <div class="down_arrow">&#8595</div>
+                        </td>
+                        <td style="position: relative;">
+                            <div class="input-group input-group-sm comment">
+                                <div><button class="base-button delete" type="submit" onclick="delete_comment(this)"><i class="fa fa-times cross"></i></button></div>
+                                <textarea 
+                                    data-line="{{loop.index}}"
+                                    name="comment" 
+                                    class="form-control comment-text"
+                                    onblur="blur_comment(this);"
+                                    type="text"
+                                >{{comments[loop.index]}}</textarea>                     
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {# set tr to the markup color #}
+                {% set classes = "code-table-entry" %}
+
+                {% if loop.index in markups %}
+                    {% set classes = classes + " " + markups[loop.index] %}
+                    {% set data_color = markups[loop.index] %}
+                {% else %}
+                    {% set data_color = "none" %}
+                {% endif %}
+
+                {% if loop.index in comments %}
+                    {% set classes = classes + " commented"%}
+                    {% if not loop.index in markups %}
+                        {% set classes = classes + " blue"%}
+                    {% endif %}
+                {% endif %}
+                <tr 
+                    id="line-{{loop.index}}"
+                    class="{{classes}}"
+                    data-line="{{loop.index}}"
+                    data-color="{{data_color}}"
+                >
                     <td class="line-number">
                         <div><button class="base-button" type="submit" onclick="comment(this)"><i class="far fa-comment bubble"></i></button></div>
                         <div><button class="base-button markup" type="submit" onclick="mark(this)"><i class="fas fa-map-marker-alt marker"></i></button></div>
@@ -32,7 +85,9 @@
     <script type="text/javascript">
         const TBODY = document.getElementById('code-table-tbody');
 
+
         function mark(button) {
+
             var tr = button.parentNode.parentNode.parentNode;
             var prev_color;
             var comment = document.getElementById("comment-" + tr.id);
@@ -70,6 +125,26 @@
             if(comment != null) {
                 $(comment).removeClass(prev_color);
                 comment.className += " " + tr.dataset.color;
+            }
+
+
+            var http_request = new XMLHttpRequest();
+            var line = tr.dataset.line;
+            var color = tr.dataset.color;
+
+            if(color == "none") {
+                var url = `remove_mark?filename={{ filename | urlencode }}&line=${line}`;
+            } 
+            else {
+                var url = `add_mark?filename={{ filename | urlencode }}&color=${color}&line=${line}`;
+            }
+
+            
+
+            http_request.open('GET', url);
+            http_request.send();
+            http_request.onreadystatechange=(e)=>{
+                // TODO: display a small confirmation somewhere ? according to status code
             }
 
 
@@ -168,18 +243,21 @@
 
             var http_request = new XMLHttpRequest();
             var line = input.dataset.line;
-            var url = `add_comment?filename={{ filename | urlencode }}&comment=${input.value}&line=${line}`;
+            var url = `add_comment?filename={{ filename | urlencode }}&line=${line}`;
+            var body = input.value;
 
-            http_request.open('GET', url);
-            http_request.send();
+            http_request.open('POST', url, true);
+            http_request.setRequestHeader('Content-Length', body.length.toString());
+            http_request.send(body);
             http_request.onreadystatechange=(e)=>{
                 // TODO: display a small confirmation somewhere ? according to status code
             }
         }
 
         function delete_comment(input) {
+            var is_blue = false;
             var http_request = new XMLHttpRequest();
-            var url = `remove_comment?filename={{ filename | urlencode }}&line=${input.dataset.line}`;
+            
 
             var input_row = input.parentElement.parentElement.parentElement.parentElement;
             var line_number = input_row.dataset.line;
@@ -187,12 +265,28 @@
             
             var commented_line = document.getElementById("line-" + line_number);
             $(commented_line).removeClass("commented");
-            $(commented_line).removeClass("blue");
 
+            if ($(commented_line).hasClass("blue")) {
+                $(commented_line).removeClass("blue");
+                var is_blue = true;
+            }
+            
+
+            var url = `remove_comment?filename={{ filename | urlencode }}&line=${line_number}`;
             http_request.open('GET', url);
             http_request.send();
             http_request.onreadystatechange=(e)=>{
                 // TODO: display a small confirmation somewhere ? according to status code
+            }
+
+            // remove blue color when removing comment
+            if (is_blue) {
+                var url = `remove_mark?filename={{ filename | urlencode }}&line=${line_number}`;
+                http_request.open('GET', url);
+                http_request.send();
+                http_request.onreadystatechange=(e)=>{
+                    // TODO: display a small confirmation somewhere ? according to status code
+                }
             }
         }
 

@@ -21,14 +21,14 @@ class ReviewedCode:
         self.markups = {}
         self.saved = True
 
-    def add_markup(self, line, color_code):
+    def add_mark(self, line, color_code):
         """
         TODO: Charles, tu peux modifier autant que tu veux.
         """
         self.markups[line] = color_code
         self.saved = False
 
-    def remove_markup(self, line):
+    def remove_mark(self, line):
         """
         TODO: Charles, tu peux modifier autant que tu veux.
         """
