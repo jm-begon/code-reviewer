@@ -195,11 +195,9 @@ class RequestHandler(BaseHTTPRequestHandler):
         lines, style = self.codes[filename].get_formatted_lines(filename, lexer=None)
         markups = self.codes[filename].get_markups()
         comments = self.codes[filename].get_comments()
-
-        print("comments:")
-        print(comments)
+        saved = self.codes[filename].get_saved()
         infos = {'lines': lines, 'style': style, 'markups': markups, \
-                'comments' : comments, 'filename': filename}
+                'comments' : comments, 'saved' : saved, 'filename': filename}
         return env.get_template('review.html').render(**infos)
 
     def _add_mark(self, data):
@@ -207,7 +205,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].add_mark(int(data['line'][0]), data['color'][0])
+        self.codes[filename].add_mark(data['line'][0], data['color'][0])
         return 200
 
     def _remove_mark(self, data):
@@ -215,7 +213,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].remove_mark(int(data['line'][0]))
+        self.codes[filename].remove_mark(data['line'][0])
         return 200
 
 
@@ -224,7 +222,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].add_comment(int(data['line'][0]), data['body'][0])
+        self.codes[filename].add_comment(data['line'][0], data['body'][0])
         return 200
 
     def _remove_comment(self, data):
@@ -232,7 +230,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].remove_comment(int(data['line'][0]))
+        self.codes[filename].remove_comment(data['line'][0])
         return 200
 
     def _save(self, data):

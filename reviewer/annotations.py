@@ -22,44 +22,32 @@ class ReviewedCode:
         self.saved = True
 
     def add_mark(self, line, color_code):
-        """
-        TODO: Charles, tu peux modifier autant que tu veux.
-        """
         self.markups[line] = color_code
         self.saved = False
 
     def remove_mark(self, line):
-        """
-        TODO: Charles, tu peux modifier autant que tu veux.
-        """
         if line not in self.markups:
             return
         del self.markups[line]
         self.saved = False
 
     def add_comment(self, line, comment):
-        """
-        TODO: Charles, tu peux modifier autant que tu veux.
-        """
         self.comments[line] = comment
         self.saved = False
 
     def remove_comment(self, line):
-        """
-        TODO: Charles, tu peux modifier autant que tu veux.
-        """
         if line not in self.comments:
             return
 
         del self.comments[line]
+        print("after remove:")
+        print(self.comments)
         self.saved = False
 
     def get_formatted_lines(self, filename, lexer=None):
         """
         Given the raw_lines, markups and comments, generate the html code to
         display the code and comment.
-
-        TODO: Charles, tu peux modifier autant que tu veux.
         """
         raw_code = ''.join(self.raw_lines)
         try:
@@ -80,16 +68,13 @@ class ReviewedCode:
         return lines, style
 
     def get_comments(self):
-        """
-        TODO: Charles, tu peux modifier autant que tu veux.
-        """
         return self.comments
 
     def get_markups(self):
-        """
-        TODO: Charles, tu peux modifier autant que tu veux.
-        """
         return self.markups
+
+    def get_saved(self):
+        return self.saved
 
     def save(self, filepath):
         review = {
@@ -97,6 +82,8 @@ class ReviewedCode:
             'comments': self.comments,
             'raw_lines': self.raw_lines,
         }
+
+        print(self.markups)
         with open(str(filepath) + '.rvw', 'w') as f:
             f.write(json.dumps(review))
 
