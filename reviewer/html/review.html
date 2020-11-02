@@ -119,6 +119,12 @@
             if ($(tr).hasClass("blue")) {
                 prev_color = "blue";
                 $(tr).removeClass("blue");
+                tr.className += " orange";
+                tr.dataset.color = "orange";
+            }
+            else if($(tr).hasClass("orange")) {
+                prev_color = "orange";
+                $(tr).removeClass("orange");
                 tr.className += " red";
                 tr.dataset.color = "red";
             }
@@ -127,7 +133,8 @@
                 $(tr).removeClass("red");
                 tr.className += " green";
                 tr.dataset.color = "green";
-            } 
+            }
+
             else if ($(tr).hasClass("green")) {
                 prev_color = "green";
                 $(tr).removeClass("green");
