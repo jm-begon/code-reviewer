@@ -110,6 +110,20 @@
         const TBODY = document.getElementById('code-table-tbody');
         var saved_status = document.getElementById('save-status');
 
+        //Capture save action. From https://stackoverflow.com/questions/93695/best-cross-browser-method-to-capture-ctrls-with-jquery
+        $(window).bind('keydown', function (event) {
+            if (event.ctrlKey || event.metaKey) {
+                switch (String.fromCharCode(event.which).toLowerCase()) {
+                    case 's':
+                        event.preventDefault();
+                        save();
+                        break;
+                }
+            }
+        });
+
+
+
         function mark(button) {
             modify();
             var tr = button.parentNode.parentNode.parentNode;
@@ -225,7 +239,7 @@
             }
             
             
-            // input_row.getElementsByTagName('input')[0].focus();
+            input_row.getElementsByTagName('textarea')[0].focus();
         }
 
         // imported from https://jsfiddle.net/cferdinandi/mqwwpL6u/
