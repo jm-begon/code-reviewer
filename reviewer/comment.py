@@ -73,7 +73,7 @@ class CSVCommentParser(object):
     def save(self, comments):
         dispath = defaultdict(list)
         for comment in comments:
-            dispath[comment.fpath] = comment
+            dispath[comment.fpath].append(comment)
 
         for comment_group in dispath.values():
             self.save_from_same_file(comment_group)
@@ -82,6 +82,9 @@ class CSVCommentParser(object):
 
     def load(self, fpath):
         comments = []
+        if not os.path.exists(fpath):
+            return comments
+
         with open(fpath, "r") as hdl:
             content = hdl.readlines()
 
