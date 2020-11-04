@@ -178,34 +178,33 @@ class RequestHandler(BaseHTTPRequestHandler):
         Review page of the code reviewer program.
         """
         filename = data['filename'][0]
-        if not filename in self.codes:
+        reviewed_code = self.codes.get(filename)
+        if reviewed_code is None:
             filepath = self.cwd / filename
             # TODO: verify that 'self.cwd / filename' is not a file outside of cwd
-            with open(filepath, 'r') as f:
-                raw_lines = f.readlines()
 
-            self.codes[filename] = ReviewedCode(raw_lines)
+            reviewed_code = ReviewedCode.from_file(filepath)
+            self.codes[filename] = reviewed_code
 
-            # If this code has already been annotated, the previous annotation are loaded
-            if Path(str(filepath) + '.rvw').is_file():
-                self.codes[filename].load(filepath)
 
         # TODO: here if 'lexer' in data (because "?lexer='Python2'" is in query for example),
         # pass the argument lexer
-        lines, style = self.codes[filename].get_formatted_lines(filename, lexer=None)
-        markups = self.codes[filename].get_markups()
-        comments = self.codes[filename].get_comments()
-        saved = self.codes[filename].get_saved()
+        lines, style = reviewed_code.get_formatted_lines(filename, lexer=None)
+        # TODO line number must be string. Allow for int
+        markups = {str(k): v for k, v in reviewed_code.get_markups().items()}
+        comments = {str(k): v for k, v in reviewed_code.get_texts().items()}
+        saved = reviewed_code.get_saved()
         infos = {'lines': lines, 'style': style, 'markups': markups, \
                 'comments' : comments, 'saved' : saved, 'filename': filename}
         return env.get_template('review.html').render(**infos)
+
 
     def _add_mark(self, data):
         filename = data['filename'][0]
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].add_mark(data['line'][0], data['color'][0])
+        self.codes[filename].add_mark(int(data['line'][0]), data['color'][0])
         return 200
 
     def _remove_mark(self, data):
@@ -213,7 +212,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].remove_mark(data['line'][0])
+        self.codes[filename].remove_mark(int(data['line'][0]))
         return 200
 
 
@@ -222,7 +221,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].add_comment(data['line'][0], data['body'][0])
+        self.codes[filename].add_text(int(data['line'][0]), data['body'][0])
         return 200
 
     def _remove_comment(self, data):
@@ -230,7 +229,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].remove_comment(data['line'][0])
+        self.codes[filename].remove_text(int(data['line'][0]))
         return 200
 
     def _save(self, data):
@@ -242,5 +241,5 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not filename in self.codes:
             return 403
 
-        self.codes[filename].save(self.cwd / filename)
+        self.codes[filename].save()
         return 200

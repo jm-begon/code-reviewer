@@ -1,6 +1,8 @@
 from setuptools import setup
 import os
 
+import reviewer
+
 # from https://stackoverflow.com/questions/27664504/how-to-add-package-data-recursively-in-python-setup-py
 def package_files(directory):
     paths = []
@@ -15,7 +17,7 @@ extra_files = package_files('reviewer/html')
 
 setup(
     name='reviewer',
-    version='1.0',
+    version=reviewer.__version__,
     description='Package providing the `review` command in order to review codes and share comments',
     author='Charles Ferir <charles.ferir@student.uliege.be>, Gaspard Lambrechts <gaspard.lambrechts@student.uliege.be>',
     packages=['reviewer'],

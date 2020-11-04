@@ -9,7 +9,7 @@
 {% block content %}
     <p>
         <a href='#' onclick='save()' class='top-link';>Save</a>
-        <a href='#' onclick='html()' class='top-link';>Export to html</a>
+        <!-- <a href='#' onclick='html()' class='top-link';>Export to html</a> -->
         <a href='#' onclick='export_pdf()' class='top-link';>Export to pdf</a>
     </p>
 
@@ -110,6 +110,20 @@
         const TBODY = document.getElementById('code-table-tbody');
         var saved_status = document.getElementById('save-status');
 
+        //Capture save action. From https://stackoverflow.com/questions/93695/best-cross-browser-method-to-capture-ctrls-with-jquery
+        $(window).bind('keydown', function (event) {
+            if (event.ctrlKey || event.metaKey) {
+                switch (String.fromCharCode(event.which).toLowerCase()) {
+                    case 's':
+                        event.preventDefault();
+                        save();
+                        break;
+                }
+            }
+        });
+
+
+
         function mark(button) {
             modify();
             var tr = button.parentNode.parentNode.parentNode;
@@ -119,6 +133,12 @@
             if ($(tr).hasClass("blue")) {
                 prev_color = "blue";
                 $(tr).removeClass("blue");
+                tr.className += " orange";
+                tr.dataset.color = "orange";
+            }
+            else if($(tr).hasClass("orange")) {
+                prev_color = "orange";
+                $(tr).removeClass("orange");
                 tr.className += " red";
                 tr.dataset.color = "red";
             }
@@ -127,7 +147,8 @@
                 $(tr).removeClass("red");
                 tr.className += " green";
                 tr.dataset.color = "green";
-            } 
+            }
+
             else if ($(tr).hasClass("green")) {
                 prev_color = "green";
                 $(tr).removeClass("green");
@@ -218,7 +239,7 @@
             }
             
             
-            // input_row.getElementsByTagName('input')[0].focus();
+            input_row.getElementsByTagName('textarea')[0].focus();
         }
 
         // imported from https://jsfiddle.net/cferdinandi/mqwwpL6u/
@@ -342,9 +363,7 @@
         function export_html() {
             // TODO: create an html version of the annotated code
         }
-        // function export_pdf() {
-            
-        // }
+
 
         function export_pdf() {
             // html2canvas(document.body).then(function(canvas) {
