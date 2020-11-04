@@ -61,7 +61,7 @@ class CSVCommentParser(object):
                              str(comment.start_line),
                              str(comment.end_line),
                              str(comment.severity.value),
-                             comment.text.replace(";", ",")])
+                             comment.text.strip().replace(";", ",")])
             lines.append(line)
 
         with open(fpath, self.mode) as hdl:
@@ -90,6 +90,8 @@ class CSVCommentParser(object):
 
         for i, line in enumerate(content):
             line = line.strip()
+            if len(line) == 0:
+                continue
             try:
                 file, start, end, severity, text = line.split(";")
                 start = int(start)
